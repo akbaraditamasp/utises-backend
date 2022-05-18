@@ -7,6 +7,7 @@ import { DateTime } from 'luxon'
 import { validator, schema, rules } from '@ioc:Adonis/Core/Validator'
 import Env from '@ioc:Adonis/Core/Env'
 import XenditControl from 'App/Services/XenditClient'
+import Ws from 'App/Services/Ws'
 
 export default class InvoicesController {
   private _generateUnique(): string {
@@ -143,6 +144,7 @@ export default class InvoicesController {
     if (status === 'PAID') {
       invoice.isPaid = true
       await invoice.save()
+      Ws.io.to(invId).emit('paid', true)
     }
 
     return invoice.serialize()
